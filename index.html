@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My2Consents demo</title>
+  <style>
+    body { margin: 0; padding: 3rem 1.5rem 20rem; font: 1rem/1.6 system-ui, sans-serif; background: #f7f9f8; color: #202a24; }
+    main { max-width: 44rem; margin: auto; } h1 { font-size: clamp(2rem, 8vw, 3rem); line-height: 1.1; }
+    nav { display: flex; flex-wrap: wrap; gap: 1rem; } a { color: #236044; } button { font: inherit; cursor: pointer; min-height: 44px; }
+    pre { overflow-wrap: anywhere; white-space: pre-wrap; background: white; padding: 1rem; border: 1px solid #cad5ce; border-radius: .5rem; }
+    html[data-demo="stage"] { --my2consents-primary: #7b4339; --my2consents-primary-hover: #66352d; --my2consents-secondary: #f3e9e5; --my2consents-background: #fffaf4; }
+  </style>
+</head>
+<body><main>
+  <p>My2Consents · framework-independent demo</p>
+  <h1 id="site-name">Northbound</h1>
+  <p>Essential preferences stay enabled. Optional analytics is your choice. This demo does not load an analytics provider.</p>
+  <nav aria-label="Demo configuration"><a href="?site=north">Northbound · English</a><a href="?site=stage">Stage Notes · Swedish</a></nav>
+  <p>These configurations use separate cookie names on the same demo origin. Production sites store consent on their own origins.</p>
+  <p><button id="open-preferences" disabled>Open preferences</button></p>
+  <pre id="state" role="status">Loading consent component…</pre>
+</main>
+<script>
+  const stage = new URLSearchParams(location.search).get('site') === 'stage';
+  const siteName = stage ? 'Stage Notes' : 'Northbound';
+  document.documentElement.lang = stage ? 'sv' : 'en';
+  document.documentElement.dataset.demo = stage ? 'stage' : 'north';
+  document.getElementById('site-name').textContent = siteName;
+  for (const name of ['my2consents:ready', 'my2consents:change']) {
+    document.addEventListener(name, event => { document.getElementById('state').textContent = JSON.stringify(event.detail, null, 2); });
+  }
+</script>
+<script src="/dist/my2consents.js"></script>
+<script>
+  My2Consents.init({ siteName, cookieName: stage ? 'demo_stage_consent' : 'demo_north_consent' }).then(() => {
+    const button = document.getElementById('open-preferences');
+    button.disabled = false;
+    button.onclick = () => My2Consents.showPreferences();
+  }).catch(error => { document.getElementById('state').textContent = error.message; });
+</script>
+</body>
+</html>
