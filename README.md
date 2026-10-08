@@ -110,6 +110,10 @@ This project follows Sembo Widgets' distribution model: the existing `less-than-
 
 Configure repository-scoped Actions secrets `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` using an R2 Object Read & Write credential restricted to this bucket. Configure the Actions variable `R2_ENDPOINT_URL` with the bucket's S3 endpoint. Never commit credentials. The existing public CORS policy must allow GET/HEAD from `*`; preserve other consumers when changing bucket settings.
 
+The l3ss.io zone has a project-scoped cache rule named **My2Consents — respect release cache headers** (rule ID `509ccc47efe44651b350ed6d2d324f2d`). It matches only `assets.l3ss.io/my2consents/` and sets Browser TTL to **Respect origin TTL**, preserving the R2 cache headers instead of applying the zone's four-hour minimum to `latest`. The reference definition is `deployment/cloudflare-cache-rule.json`. Do not change zone-wide caching or unrelated prefixes. Public release verification still checks that the rule takes effect. See [Cloudflare Browser Cache TTL](https://developers.cloudflare.com/cache/how-to/edge-browser-cache-ttl/).
+
+GitHub Actions has been enabled for this repository. For a new repository, open its Actions page and enable workflows if prompted; repository Actions permissions alone may not activate workflow execution.
+
 Pushes to `main` and pull requests verify without publishing. A `v<version>` tag matching `package.json` triggers verification and publishing. The publisher refuses an already-populated immutable prefix, uploads and verifies every versioned file, and only then updates and verifies `latest`. Companion CSS is uploaded before JavaScript. Public checks compare exact bytes, MIME types, cache headers, and `Access-Control-Allow-Origin: *`.
 
 - Pinned releases: `my2consents/v0.1.0/`, with `Cache-Control: public, max-age=31536000, immutable`.
